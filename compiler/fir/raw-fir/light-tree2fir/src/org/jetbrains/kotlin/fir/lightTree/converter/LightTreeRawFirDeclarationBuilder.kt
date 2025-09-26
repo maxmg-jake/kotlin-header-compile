@@ -2067,6 +2067,7 @@ class LightTreeRawFirDeclarationBuilder(
                     val bodyWithContractDescription = withForcedLocalContext {
                         convertFunctionBody(block, expression, allowLegacyContractDescription)
                     }
+
                     this.body = bodyWithContractDescription.first
                     val contractDescription = outerContractDescription ?: bodyWithContractDescription.second
                     contractDescription?.let {
@@ -2105,6 +2106,7 @@ class LightTreeRawFirDeclarationBuilder(
         allowLegacyContractDescription: Boolean
     ): Pair<FirBlock?, FirContractDescription?> {
         return when {
+            headerCompilationMode -> null to null
             blockNode != null -> {
                 val block = convertBlock(blockNode)
                 val contractDescription = runIf(allowLegacyContractDescription) {

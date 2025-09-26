@@ -267,7 +267,7 @@ object JvmFrontendPipelinePhase : PipelinePhase<ConfigurationPipelineArtifact, J
                     configuration.headerCompilation)
                 else -> session.buildFirFromKtFiles(sources.asKtFilesList())
             }
-            resolveAndCheckFir(session, rawFirFiles, diagnosticsCollector)
+            resolveAndCheckFir(session, rawFirFiles, diagnosticsCollector, configuration.headerCompilation)
         }
         outputs.runPlatformCheckers(diagnosticsCollector)
 

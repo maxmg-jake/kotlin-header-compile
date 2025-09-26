@@ -60,9 +60,10 @@ fun FirSession.buildFirFromKtFiles(ktFiles: Collection<KtFile>): List<FirFile> {
 fun buildResolveAndCheckFirFromKtFiles(
     session: FirSession,
     ktFiles: List<KtFile>,
-    diagnosticsReporter: BaseDiagnosticsCollector
+    diagnosticsReporter: BaseDiagnosticsCollector,
+    useHeaderCompilation: Boolean
 ): ModuleCompilerAnalyzedOutput {
-    return resolveAndCheckFir(session, session.buildFirFromKtFiles(ktFiles), diagnosticsReporter)
+    return resolveAndCheckFir(session, session.buildFirFromKtFiles(ktFiles), diagnosticsReporter, useHeaderCompilation)
 }
 
 /**
@@ -72,10 +73,12 @@ fun buildResolveAndCheckFirFromKtFiles(
 fun resolveAndCheckFir(
     session: FirSession,
     firFiles: List<FirFile>,
-    diagnosticsReporter: BaseDiagnosticsCollector
+    diagnosticsReporter: BaseDiagnosticsCollector,
+    useHeaderCompilation: Boolean,
 ): ModuleCompilerAnalyzedOutput {
     val (scopeSession, fir) = session.runResolution(firFiles)
-    session.runCheckers(scopeSession, fir, diagnosticsReporter, MppCheckerKind.Common)
+    if (!useHeaderCompilation)
+        session.runCheckers(scopeSession, fir, diagnosticsReporter, MppCheckerKind.Common)
     return ModuleCompilerAnalyzedOutput(session, scopeSession, fir)
 }
 
@@ -87,5 +90,5 @@ fun buildResolveAndCheckFirViaLightTree(
     useHeaderCompilation: Boolean,
 ): ModuleCompilerAnalyzedOutput {
     val firFiles = session.buildFirViaLightTree(ktFiles, diagnosticsReporter, countFilesAndLines, useHeaderCompilation)
-    return resolveAndCheckFir(session, firFiles, diagnosticsReporter)
+    return resolveAndCheckFir(session, firFiles, diagnosticsReporter, useHeaderCompilation)
 }
